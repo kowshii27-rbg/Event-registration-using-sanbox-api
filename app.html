@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>School Event Registration</h1>
+    <form id="registrationForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" required><br>
+
+        <label for="ticketQuantity">Number of Tickets:</label>
+        <input type="number" id="ticketQuantity" min="1" value="1" required><br>
+
+        <button type="button" id="payButton">Pay with PayPal <a href="payment.html"> go to payment</a></button>
+    </form>
+
+    <script>
+        document.getElementById('payButton').onclick = function() {
+            const ticketQuantity = document.getElementById('ticketQuantity').value;
+            const total = ticketQuantity * 10; // $10 per ticket
+
+            fetch('/create-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ total: total })
+            })
+            .then(response => response.json())
+            .then(orderData => {
+                if (orderData.id) {
+                    // Redirect to PayPal payment page
+                    window.location.href = `https://www.sandbox.paypal.com/checkoutnow?token=${orderData.id}`;
+                } else {
+                    alert('Error creating PayPal order.');
+                }
+            });
+        };
+    </script>
+</body>
+</html>
+
+
